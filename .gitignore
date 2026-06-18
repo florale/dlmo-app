@@ -1,0 +1,13 @@
+.Rhistory
+.RData
+.Rproj.user/
+outputs/
+*.sqlite
+*.db
+.env
+secrets/
+.DS_Store
+secrets/
+.env
+.Renviron
+*.json
