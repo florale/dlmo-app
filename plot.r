@@ -6,7 +6,7 @@ library(bayesplot)
 bp_cols <- unname(unlist(bayesplot::color_scheme_get("red")))
 
 profile_col <- bp_cols[4]
-line_col <- bp_cols[2]
+line_col <- bp_cols[1]
 point_col <- bp_cols[4]
 clicked_col <- bp_cols[5]
 
@@ -158,7 +158,7 @@ plot_dlmo_app <- function(d, time_gap = 2, y_gap = 1, label_gap = 1,
     scale_x_continuous(
       breaks = seq(floor(min(time_h)), ceiling(max(time_h)), by = 1),
       labels = function(x) sprintf("%02d", x %% 24),
-      limits = c(x_start, max(time_h, na.rm = TRUE) + 4)
+      limits = c(x_start, x_end)
     ) +
     labs(
       # title = paste(d$id_tp, d$reason_category_revised, sep = " | "),
@@ -197,9 +197,10 @@ plot_dlmo_app <- function(d, time_gap = 2, y_gap = 1, label_gap = 1,
   }
 
   p +
-    theme_classic(base_size = 12) +
+    theme_minimal(base_size = 12) +
     theme(
       legend.position = "none",
+      axis.title = element_text(face = "bold"),
       plot.title = element_text(face = "bold", size = 14)
     )
 }
