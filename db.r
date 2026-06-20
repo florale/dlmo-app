@@ -2,21 +2,16 @@ library(data.table)
 library(googlesheets4)
 
 review_cols <- c(
-  "review_id",
+  "review_id_response",
   "reviewer",
   "reviewed_at",
   "id_tp",
-  "ID",
   "timepoint",
   "clicked_dlmo_h",
   "clicked_dlmo_clock",
   "decision",
   "confidence",
-  "notes",
-  "dlmo_hs",
-  "dlmo_fixed_3",
-  "dlmo_fixed_4",
-  "reason_category_revised"
+  "notes"
 )
 
 # connect_db <- function(sheet_id = Sys.getenv("DLMO_REVIEW_SHEET"),
@@ -64,7 +59,7 @@ connect_db <- function(sheet_id = Sys.getenv("DLMO_REVIEW_SHEET"),
 
 new_review_id <- function() {
   paste0(
-    format(Sys.time(), "%Y%m%d%H%M%OS6"),
+    format(Sys.time(), "%Y%m%d%H%M%S"),
     "_",
     sample(100000:999999, 1)
   )
@@ -73,7 +68,7 @@ new_review_id <- function() {
 save_review <- function(con, row) {
   row <- as.data.frame(row, stringsAsFactors = FALSE)
   
-  row$review_id <- new_review_id()
+  row$review_id_response <- new_review_id()
   
   missing_cols <- setdiff(review_cols, names(row))
   for (x in missing_cols) row[[x]] <- NA

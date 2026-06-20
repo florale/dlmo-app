@@ -11,3 +11,8 @@ secrets/
 .env
 .Renviron
 *.json
+data/dlmo_check.rds
+
+data/secure_local_id_key.rds
+
+data/data.r
