@@ -7,6 +7,7 @@ source("plot.r")
 source("db.r")
 
 dlmo_review_data <- readRDS("data/dlmo_review_data.rds")
+dlmo_check <- readRDS("data/dlmo_check.rds")
 
 `%||%` <- function(x, y) {
   if (is.null(x) || length(x) == 0 || is.na(x)) y else x
@@ -20,7 +21,7 @@ ui <- fluidPage(
       selectInput(
         "case_id",
         "Case",
-        choices = dlmo_check$id_tp
+        choices = dlmo_review_data$id_tp
       ),
       radioButtons(
         "decision",
@@ -65,11 +66,11 @@ server <- function(input, output, session) {
   previous_review <- reactiveVal(NULL)
 
   current_row <- reactive({
-    dlmo_check[id_tp == input$case_id]
+    dlmo_review_data[id_tp == input$case_id]
   })
 
   refresh_case_dropdown <- function(selected = isolate(input$case_id)) {
-    selected <- selected %||% dlmo_check$id_tp[1]
+    selected <- selected %||% dlmo_review_data$id_tp[1]
 
     updateSelectInput(
       session,
@@ -249,9 +250,9 @@ server <- function(input, output, session) {
 
     showNotification("Review saved.", type = "message")
 
-    i <- match(input$case_id, dlmo_check$id_tp)
-    next_i <- ifelse(i < nrow(dlmo_check), i + 1, i)
-    next_case <- dlmo_check$id_tp[next_i]
+    i <- match(input$case_id, dlmo_review_data$id_tp)
+    next_i <- ifelse(i < nrow(dlmo_review_data), i + 1, i)
+    next_case <- dlmo_review_data$id_tp[next_i]
 
     refresh_case_dropdown(selected = next_case)
   })
