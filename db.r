@@ -31,6 +31,14 @@ review_cols <- c(
 #   )
 # }
 
+google_json <- Sys.getenv("GOOGLE_SERVICE_ACCOUNT_JSON")
+
+if (nzchar(google_json)) {
+  cred_path <- tempfile(fileext = ".json")
+  writeLines(google_json, cred_path)
+  Sys.setenv(GOOGLE_APPLICATION_CREDENTIALS = cred_path)
+}
+
 connect_db <- function(sheet_id = Sys.getenv("DLMO_REVIEW_SHEET"),
                        sheet = "reviews",
                        service_account_path = Sys.getenv("GOOGLE_APPLICATION_CREDENTIALS")) {
