@@ -7,7 +7,7 @@ source("plot.r")
 source("db.r")
 
 dlmo_review_data <- readRDS("data/dlmo_review_data.rds")
-dlmo_check <- readRDS("data/dlmo_check.rds")
+# dlmo_check <- readRDS("data/dlmo_check.rds")
 
 `%||%` <- function(x, y) {
   if (is.null(x) || length(x) == 0 || is.na(x)) y else x

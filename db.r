@@ -159,7 +159,7 @@ get_clicked_reviewed_ids <- function(con, reviewer) {
 }
 
 make_case_choices <- function(con, reviewer) {
-  ids <- dlmo_check$id_tp
+  ids <- dlmo_review_data$id_tp
   clicked_ids <- get_clicked_reviewed_ids(con, reviewer)
   
   labels <- ifelse(
