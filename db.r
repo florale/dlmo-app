@@ -33,14 +33,18 @@ review_cols <- c(
 
 connect_db <- function(sheet_id = Sys.getenv("DLMO_REVIEW_SHEET"),
                        sheet = "reviews",
-                       service_account_path = Sys.getenv("GOOGLE_APPLICATION_CREDENTIALS")) {
-                        
+                       service_account_path = NULL) {
+
   google_json <- Sys.getenv("GOOGLE_SERVICE_ACCOUNT_JSON")
 
   if (nzchar(google_json)) {
-    cred_path <- tempfile(fileext = ".json")
-    writeLines(google_json, cred_path)
-    Sys.setenv(GOOGLE_APPLICATION_CREDENTIALS = cred_path)
+    service_account_path <- tempfile(fileext = ".json")
+    writeLines(google_json, service_account_path, useBytes = TRUE)
+    Sys.setenv(GOOGLE_APPLICATION_CREDENTIALS = service_account_path)
+  }
+
+  if (is.null(service_account_path) || !nzchar(service_account_path)) {
+    service_account_path <- Sys.getenv("GOOGLE_APPLICATION_CREDENTIALS")
   }
 
   if (!nzchar(sheet_id)) {
@@ -48,7 +52,7 @@ connect_db <- function(sheet_id = Sys.getenv("DLMO_REVIEW_SHEET"),
   }
 
   if (!nzchar(service_account_path)) {
-    stop("GOOGLE_APPLICATION_CREDENTIALS is not set. Add the service account JSON path to .Renviron.")
+    stop("GOOGLE_APPLICATION_CREDENTIALS is not set. Add GOOGLE_SERVICE_ACCOUNT_JSON as a Connect Cloud secret.")
   }
 
   if (!file.exists(service_account_path)) {
@@ -132,7 +136,7 @@ get_latest_review <- function(con, reviewer, id_tp) {
   }
 
   reviews[, reviewed_at_posix := as.POSIXct(reviewed_at, tz = Sys.timezone())]
-  setorder(reviews, reviewed_at_posix, review_id)
+  setorder(reviews, reviewed_at_posix, review_id_response)
 
   reviews[.N]
 }
@@ -157,7 +161,7 @@ get_clicked_reviewed_ids <- function(con, reviewer) {
   }
 
   reviews[, reviewed_at_posix := as.POSIXct(reviewed_at, tz = Sys.timezone())]
-  setorder(reviews, id_tp, reviewed_at_posix, review_id)
+  setorder(reviews, id_tp, reviewed_at_posix, review_id_response)
 
   latest <- reviews[, .SD[.N], by = id_tp]
 
@@ -167,8 +171,12 @@ get_clicked_reviewed_ids <- function(con, reviewer) {
   ]
 }
 
-make_case_choices <- function(con, reviewer) {
-  ids <- dlmo_review_data$id_tp
+make_case_choices <- function(con, reviewer, dlmo_review_data) {
+  if (!"id_tp" %in% names(dlmo_review_data)) {
+    stop("dlmo_review_data must contain an id_tp column.")
+  }
+
+  ids <- as.character(unique(dlmo_review_data$id_tp))
   clicked_ids <- get_clicked_reviewed_ids(con, reviewer)
 
   labels <- ifelse(

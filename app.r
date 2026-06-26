@@ -3,10 +3,11 @@ library(data.table)
 library(ggplot2)
 library(googlesheets4)
 
+dlmo_review_data <- readRDS("data/dlmo_review_data.rds")
+
 source("plot.r")
 source("db.r")
 
-dlmo_review_data <- readRDS("data/dlmo_review_data.rds")
 # dlmo_check <- readRDS("data/dlmo_check.rds")
 
 `%||%` <- function(x, y) {
@@ -75,7 +76,7 @@ server <- function(input, output, session) {
     updateSelectInput(
       session,
       "case_id",
-      choices = make_case_choices(con, input$reviewer),
+      choices = make_case_choices(con, input$reviewer, dlmo_review_data),
       selected = selected
     )
   }
